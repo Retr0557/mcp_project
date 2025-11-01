@@ -1,0 +1,76 @@
+.chat-input {
+  background: white;
+  padding: 20px 30px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.input-container {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+  background: #f8f9fa;
+  border-radius: 25px;
+  padding: 12px 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.input-container textarea {
+  flex: 1;
+  border: none;
+  background: transparent;
+  resize: none;
+  font-size: 15px;
+  font-family: inherit;
+  outline: none;
+  max-height: 120px;
+  min-height: 24px;
+  line-height: 24px;
+}
+
+.input-container textarea::placeholder {
+  color: #999;
+}
+
+.input-container button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: white;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.input-container button:hover:not(:disabled) {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.input-container button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.input-container button svg {
+  width: 20px;
+  height: 20px;
+}
+
+@media (max-width: 768px) {
+  .chat-input {
+    padding: 15px;
+  }
+  
+  .input-container {
+    padding: 10px 15px;
+  }
+  
+  .input-container textarea {
+    font-size: 14px;
+  }
+}
