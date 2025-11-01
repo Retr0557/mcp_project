@@ -34,7 +34,7 @@ if [ ! -f "backend/.env" ]; then
 fi
 
 # Check if ANTHROPIC_API_KEY is set
-if ! grep -q "ANTHROPIC_API_KEY=sk-" backend/.env; then
+if ! grep -q "ANTHROPIC_API_KEY=.\+" backend/.env; then
     echo ""
     echo "⚠️  ANTHROPIC_API_KEY is not set in backend/.env"
     echo "📝 Please edit backend/.env and add your API key"

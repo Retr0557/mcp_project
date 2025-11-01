@@ -6,6 +6,7 @@ A simulated MCP server that provides Zomato restaurant data and order placement 
 import asyncio
 import json
 from typing import Any, Sequence
+from threading import Lock
 from mcp.server import Server
 from mcp.types import Tool, TextContent, Resource, EmbeddedResource
 from mcp.server.stdio import stdio_server
@@ -63,8 +64,9 @@ RESTAURANTS = [
     }
 ]
 
-# Order storage
+# Order storage with thread-safety
 orders = []
+orders_lock = Lock()
 
 
 app = Server("zomato-mcp-server")
@@ -217,19 +219,20 @@ async def call_tool(name: str, arguments: Any) -> Sequence[TextContent]:
                     "price": menu_item["price"]
                 })
         
-        # Create order
-        order_id = f"ORD{len(orders) + 1001}"
-        order = {
-            "order_id": order_id,
-            "restaurant": restaurant["name"],
-            "items": order_items,
-            "total": total,
-            "delivery_address": delivery_address,
-            "payment_method": "Cash on Delivery",
-            "status": "Order Placed",
-            "estimated_delivery": restaurant["delivery_time"]
-        }
-        orders.append(order)
+        # Create order with thread-safety
+        with orders_lock:
+            order_id = f"ORD{len(orders) + 1001}"
+            order = {
+                "order_id": order_id,
+                "restaurant": restaurant["name"],
+                "items": order_items,
+                "total": total,
+                "delivery_address": delivery_address,
+                "payment_method": "Cash on Delivery",
+                "status": "Order Placed",
+                "estimated_delivery": restaurant["delivery_time"]
+            }
+            orders.append(order)
         
         return [TextContent(
             type="text",
@@ -238,7 +241,8 @@ async def call_tool(name: str, arguments: Any) -> Sequence[TextContent]:
     
     elif name == "get_order_status":
         order_id = arguments.get("order_id")
-        order = next((o for o in orders if o["order_id"] == order_id), None)
+        with orders_lock:
+            order = next((o for o in orders if o["order_id"] == order_id), None)
         if order:
             return [TextContent(
                 type="text",
