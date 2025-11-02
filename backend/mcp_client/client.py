@@ -122,7 +122,7 @@ class ZomatoMCPClient:
                     result = await self.session.call_tool(tool_name, tool_args)
                     
                     # Extract content from result with error handling
-                    if result.content and len(result.content) > 0:
+                    if result.content:
                         content = result.content[0].text
                     else:
                         content = "Tool executed successfully but returned no content"
