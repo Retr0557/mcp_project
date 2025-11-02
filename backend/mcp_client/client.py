@@ -1,12 +1,12 @@
 """
-MCP Client for Zomato with Claude AI Integration
+MCP Client for Zomato with OpenAI Integration
 """
 
 import asyncio
 import json
 import os
 from typing import Optional, List, Dict, Any
-from anthropic import Anthropic
+from openai import OpenAI
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
 from dotenv import load_dotenv
@@ -15,10 +15,10 @@ load_dotenv()
 
 
 class ZomatoMCPClient:
-    """MCP Client that connects to Zomato server and uses Claude for AI interactions."""
+    """MCP Client that connects to Zomato server and uses OpenAI for AI interactions."""
     
     def __init__(self):
-        self.anthropic_client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
+        self.openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
         self.session: Optional[ClientSession] = None
         self.available_tools = []
         self.conversation_history = []
@@ -43,7 +43,7 @@ class ZomatoMCPClient:
         print(f"Connected to Zomato MCP Server. Available tools: {len(self.available_tools)}")
         
     async def process_user_request(self, user_message: str) -> str:
-        """Process user request through Claude and execute MCP tools as needed."""
+        """Process user request through OpenAI and execute MCP tools as needed."""
         
         # Add user message to history
         self.conversation_history.append({
@@ -51,69 +51,75 @@ class ZomatoMCPClient:
             "content": user_message
         })
         
-        # Prepare tools for Claude
-        claude_tools = []
+        # Prepare tools for OpenAI
+        openai_tools = []
         for tool in self.available_tools:
-            claude_tools.append({
-                "name": tool.name,
-                "description": tool.description,
-                "input_schema": tool.inputSchema
+            openai_tools.append({
+                "type": "function",
+                "function": {
+                    "name": tool.name,
+                    "description": tool.description,
+                    "parameters": tool.inputSchema
+                }
             })
         
-        # Initial Claude request
-        response = self.anthropic_client.messages.create(
-            model="claude-3-5-sonnet-20241022",
+        # Initial OpenAI request
+        response = self.openai_client.chat.completions.create(
+            model="gpt-4o",
             max_tokens=4096,
-            tools=claude_tools,
+            tools=openai_tools if openai_tools else None,
             messages=self.conversation_history
         )
         
         # Process tool calls
-        while response.stop_reason == "tool_use":
+        while response.choices[0].finish_reason == "tool_calls":
+            assistant_message = response.choices[0].message
+            
             # Add assistant response to history
             self.conversation_history.append({
                 "role": "assistant",
-                "content": response.content
+                "content": assistant_message.content,
+                "tool_calls": [
+                    {
+                        "id": tc.id,
+                        "type": "function",
+                        "function": {
+                            "name": tc.function.name,
+                            "arguments": tc.function.arguments
+                        }
+                    }
+                    for tc in assistant_message.tool_calls
+                ]
             })
             
             # Execute tool calls
-            tool_results = []
-            for content_block in response.content:
-                if content_block.type == "tool_use":
-                    tool_name = content_block.name
-                    tool_args = content_block.input
-                    
-                    print(f"\nExecuting tool: {tool_name}")
-                    print(f"Arguments: {json.dumps(tool_args, indent=2)}")
-                    
-                    # Call MCP tool
-                    result = await self.session.call_tool(tool_name, tool_args)
-                    
-                    tool_results.append({
-                        "type": "tool_result",
-                        "tool_use_id": content_block.id,
-                        "content": result.content[0].text
-                    })
+            for tool_call in assistant_message.tool_calls:
+                tool_name = tool_call.function.name
+                tool_args = json.loads(tool_call.function.arguments)
+                
+                print(f"\nExecuting tool: {tool_name}")
+                print(f"Arguments: {json.dumps(tool_args, indent=2)}")
+                
+                # Call MCP tool
+                result = await self.session.call_tool(tool_name, tool_args)
+                
+                # Add tool result to history
+                self.conversation_history.append({
+                    "role": "tool",
+                    "tool_call_id": tool_call.id,
+                    "content": result.content[0].text
+                })
             
-            # Add tool results to history
-            self.conversation_history.append({
-                "role": "user",
-                "content": tool_results
-            })
-            
-            # Continue conversation with Claude
-            response = self.anthropic_client.messages.create(
-                model="claude-3-5-sonnet-20241022",
+            # Continue conversation with OpenAI
+            response = self.openai_client.chat.completions.create(
+                model="gpt-4o",
                 max_tokens=4096,
-                tools=claude_tools,
+                tools=openai_tools if openai_tools else None,
                 messages=self.conversation_history
             )
         
         # Extract final text response
-        final_response = ""
-        for content_block in response.content:
-            if hasattr(content_block, "text"):
-                final_response += content_block.text
+        final_response = response.choices[0].message.content or ""
         
         # Add final assistant response to history
         self.conversation_history.append({
@@ -139,7 +145,7 @@ async def main():
         print("Connected!\n")
         
         # Interactive loop
-        print("Zomato AI Assistant (powered by Claude)")
+        print("Zomato AI Assistant (powered by OpenAI)")
         print("=" * 50)
         print("You can ask me to:")
         print("- Search for restaurants")

@@ -74,7 +74,7 @@ async def root():
 @app.post("/chat", response_model=ChatResponse)
 async def chat(request: ChatRequest):
     """
-    Process user message through Claude AI and MCP tools.
+    Process user message through OpenAI GPT and MCP tools.
     """
     try:
         if not mcp_client:

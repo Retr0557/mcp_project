@@ -1,6 +1,6 @@
 # Zomato MCP Client Project
 
-A comprehensive MCP (Model Context Protocol) client application that communicates with a Zomato MCP server to access restaurant data and perform actions like placing orders with Cash on Delivery payment method. The application uses Claude Anthropic as the AI interface and features a React.js frontend.
+A comprehensive MCP (Model Context Protocol) client application that communicates with a Zomato MCP server to access restaurant data and perform actions like placing orders with Cash on Delivery payment method. The application uses OpenAI GPT as the AI interface and features a React.js frontend.
 
 ## Architecture
 
@@ -12,7 +12,7 @@ A comprehensive MCP (Model Context Protocol) client application that communicate
                                   │
                                   │
                          ┌────────▼─────────┐
-                         │  Claude Anthropic│
+                         │    OpenAI GPT    │
                          │      API         │
                          └──────────────────┘
 ```
@@ -23,14 +23,14 @@ A comprehensive MCP (Model Context Protocol) client application that communicate
 - 📋 **Menu Viewing**: View detailed menus for any restaurant
 - 🛒 **Order Placement**: Place orders with Cash on Delivery (COD) payment
 - 📦 **Order Tracking**: Check the status of placed orders
-- 🤖 **AI-Powered**: Natural language interaction powered by Claude AI
+- 🤖 **AI-Powered**: Natural language interaction powered by OpenAI GPT
 - 💬 **Interactive Chat**: Beautiful, responsive chat interface
 
 ## Prerequisites
 
 - Python 3.8+
 - Node.js 18+
-- Anthropic API key
+- OpenAI API key
 
 ## Installation
 
@@ -46,10 +46,10 @@ cd backend
 pip install -r requirements.txt
 ```
 
-3. Create a `.env` file with your Anthropic API key:
+3. Create a `.env` file with your OpenAI API key:
 ```bash
 cp .env.example .env
-# Edit .env and add your ANTHROPIC_API_KEY
+# Edit .env and add your OPENAI_API_KEY
 ```
 
 ### Frontend Setup
@@ -162,7 +162,7 @@ The Zomato MCP server provides the following tools:
 ### Backend
 - **Python**: Core language
 - **MCP**: Model Context Protocol for server communication
-- **Anthropic Claude**: AI model for natural language processing
+- **OpenAI GPT**: AI model for natural language processing
 - **FastAPI**: REST API framework
 - **Uvicorn**: ASGI server
 
@@ -179,7 +179,7 @@ The Zomato MCP server provides the following tools:
 Create a `.env` file in the `backend` directory:
 
 ```env
-ANTHROPIC_API_KEY=your_api_key_here
+OPENAI_API_KEY=your_api_key_here
 ```
 
 ## Development
@@ -203,7 +203,7 @@ Edit `backend/zomato_server/server.py` and add entries to the `RESTAURANTS` list
 
 ### Backend won't start
 - Ensure Python dependencies are installed: `pip install -r requirements.txt`
-- Check that your ANTHROPIC_API_KEY is set in `.env`
+- Check that your OPENAI_API_KEY is set in `.env`
 
 ### Frontend can't connect to backend
 - Ensure the backend is running on port 8000

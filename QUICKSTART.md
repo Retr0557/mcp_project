@@ -3,16 +3,16 @@
 ## Prerequisites
 - Python 3.8 or higher
 - Node.js 18 or higher
-- Anthropic API key (get it from https://console.anthropic.com/)
+- OpenAI API key (get it from https://platform.openai.com/)
 
 ## Setup Instructions
 
-### 1. Get Your Anthropic API Key
-1. Visit https://console.anthropic.com/
+### 1. Get Your OpenAI API Key
+1. Visit https://platform.openai.com/
 2. Sign up or log in
 3. Navigate to API Keys
 4. Create a new API key
-5. Copy the key (it starts with `sk-ant-`)
+5. Copy the key (it starts with `sk-`)
 
 ### 2. Configure the Backend
 ```bash
@@ -23,7 +23,7 @@ cp .env.example .env
 
 Your `.env` file should look like:
 ```
-ANTHROPIC_API_KEY=sk-ant-api03-...
+OPENAI_API_KEY=sk-...
 ```
 
 ### 3. Install Dependencies
@@ -123,10 +123,10 @@ This application only supports **Cash on Delivery (COD)** as the payment method.
 ## Troubleshooting
 
 ### Backend won't start
-- **Issue:** `ModuleNotFoundError: No module named 'anthropic'`
+- **Issue:** `ModuleNotFoundError: No module named 'openai'`
   - **Solution:** Run `pip install -r requirements.txt` in the backend directory
 
-- **Issue:** `Error: ANTHROPIC_API_KEY not set`
+- **Issue:** `Error: OPENAI_API_KEY not set`
   - **Solution:** Create a `.env` file in the backend directory and add your API key
 
 ### Frontend won't start
@@ -143,7 +143,7 @@ This application only supports **Cash on Delivery (COD)** as the payment method.
 
 ### API Key Issues
 - **Issue:** `401 Unauthorized` errors
-  - **Solution:** Verify your Anthropic API key is correct and has sufficient credits
+  - **Solution:** Verify your OpenAI API key is correct and has sufficient credits
 
 ## Advanced Usage
 
@@ -166,7 +166,7 @@ Visit http://localhost:8000/tools to see all available MCP tools and their schem
 ## Security Notes
 
 - Never commit your `.env` file with the API key
-- Keep your Anthropic API key secure
+- Keep your OpenAI API key secure
 - The `.env` file is already in `.gitignore` to prevent accidental commits
 
 ## Support
