@@ -76,10 +76,14 @@ class ZomatoMCPClient:
             assistant_message = response.choices[0].message
             
             # Add assistant response to history
-            self.conversation_history.append({
+            history_entry = {
                 "role": "assistant",
-                "content": assistant_message.content,
-                "tool_calls": [
+                "content": assistant_message.content or ""
+            }
+            
+            # Only add tool_calls if they exist
+            if assistant_message.tool_calls:
+                history_entry["tool_calls"] = [
                     {
                         "id": tc.id,
                         "type": "function",
@@ -90,7 +94,8 @@ class ZomatoMCPClient:
                     }
                     for tc in assistant_message.tool_calls
                 ]
-            })
+            
+            self.conversation_history.append(history_entry)
             
             # Execute tool calls
             for tool_call in assistant_message.tool_calls:
