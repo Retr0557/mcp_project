@@ -100,7 +100,19 @@ class ZomatoMCPClient:
             # Execute tool calls
             for tool_call in assistant_message.tool_calls:
                 tool_name = tool_call.function.name
-                tool_args = json.loads(tool_call.function.arguments)
+                
+                # Parse tool arguments with error handling
+                try:
+                    tool_args = json.loads(tool_call.function.arguments)
+                except json.JSONDecodeError as e:
+                    print(f"\nError: Failed to parse tool arguments: {e}")
+                    # Add error result to history
+                    self.conversation_history.append({
+                        "role": "tool",
+                        "tool_call_id": tool_call.id,
+                        "content": f"Error: Invalid JSON in tool arguments - {str(e)}"
+                    })
+                    continue
                 
                 print(f"\nExecuting tool: {tool_name}")
                 print(f"Arguments: {json.dumps(tool_args, indent=2)}")
@@ -108,11 +120,17 @@ class ZomatoMCPClient:
                 # Call MCP tool
                 result = await self.session.call_tool(tool_name, tool_args)
                 
+                # Extract content from result with error handling
+                if result.content and len(result.content) > 0:
+                    content = result.content[0].text
+                else:
+                    content = "Tool executed successfully but returned no content"
+                
                 # Add tool result to history
                 self.conversation_history.append({
                     "role": "tool",
                     "tool_call_id": tool_call.id,
-                    "content": result.content[0].text
+                    "content": content
                 })
             
             # Continue conversation with OpenAI
