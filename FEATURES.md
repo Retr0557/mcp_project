@@ -36,24 +36,24 @@ This project demonstrates a complete implementation of the Model Context Protoco
 │  ┌───────────────────────────────────────────────────────────┐  │
 │  │  - Manages MCP session with Zomato server                 │  │
 │  │  - Maintains conversation history                         │  │
-│  │  - Coordinates between Claude and MCP tools               │  │
+│  │  - Coordinates between OpenAI and MCP tools               │  │
 │  └───────────────────────────────────────────────────────────┘  │
 └──────────┬────────────────────────────────────────┬─────────────┘
            │                                        │
            │ MCP Protocol (stdio)                   │ API Calls
            ▼                                        ▼
 ┌──────────────────────────┐         ┌──────────────────────────┐
-│   Zomato MCP Server      │         │   Anthropic Claude API   │
+│   Zomato MCP Server      │         │     OpenAI GPT API       │
 │                          │         │                          │
 │  Tools:                  │         │  - Natural language      │
 │  - search_restaurants    │         │    understanding         │
 │  - get_restaurant_menu   │         │  - Tool use capability   │
 │  - place_order           │         │  - Context maintenance   │
 │  - get_order_status      │         │                          │
-│                          │         │  Model: Claude 3.5       │
-│  Data:                   │         │         Sonnet           │
-│  - Restaurant database   │         │                          │
-│  - Order storage         │         └──────────────────────────┘
+│                          │         │  Model: GPT-4o           │
+│  Data:                   │         │                          │
+│  - Restaurant database   │         └──────────────────────────┘
+│  - Order storage         │
 └──────────────────────────┘
 ```
 
@@ -139,7 +139,7 @@ AI: Recommends Curry Corner with spicy Indian dishes
 - **Session Management:** Persistent MCP session
 - **Tool Discovery:** Dynamic tool listing
 - **Conversation:** History maintenance
-- **Integration:** Seamless Claude API integration
+- **Integration:** Seamless OpenAI API integration
 
 #### FastAPI Backend
 - **Async Operations:** Full async/await support
@@ -334,7 +334,7 @@ uvicorn api:app --workers 4 --host 0.0.0.0 --port 8000
 
 This project demonstrates:
 - MCP protocol implementation
-- Claude AI integration
+- OpenAI GPT integration
 - FastAPI development
 - React.js application structure
 - Async Python programming
